@@ -1,0 +1,102 @@
+{ lib, pkgs, config, ... }:
+let
+  cfg = config.services.deploy-intent-agent;
+  inherit (lib) concatStringsSep escapeShellArg mkEnableOption mkIf mkOption types;
+  labelArgs = concatStringsSep " " (map (label: "--labels ${escapeShellArg label}") cfg.labels);
+  startScript = pkgs.writeShellScript "deploy-intent-agent-start" ''
+    exec ${cfg.package}/bin/deploy-intent agent \
+      --server ${escapeShellArg cfg.serverUrl} \
+      --asset-id ${escapeShellArg cfg.assetId} \
+      --asset-type ${escapeShellArg cfg.assetType} \
+      --mission-state ${escapeShellArg cfg.missionState} \
+      --poll-seconds ${toString cfg.pollSeconds} \
+      --state-dir ${escapeShellArg cfg.stateDir} \
+      ${labelArgs} \
+      ${cfg.extraArgs}
+  '';
+in
+{
+  options.services.deploy-intent-agent = {
+    enable = mkEnableOption "deploy-intent polling agent";
+
+    package = mkOption {
+      type = types.package;
+      description = "deploy-intent package to run.";
+    };
+
+    serverUrl = mkOption {
+      type = types.str;
+      description = "Control-plane base URL.";
+    };
+
+    assetId = mkOption {
+      type = types.str;
+      description = "Unique asset identity reported by the agent.";
+    };
+
+    assetType = mkOption {
+      type = types.str;
+      default = "edge-linux-aarch64";
+      description = "Asset type used for deployment target matching.";
+    };
+
+    missionState = mkOption {
+      type = types.str;
+      default = "idle";
+      description = "Mission state reported on check-in.";
+    };
+
+    pollSeconds = mkOption {
+      type = types.ints.positive;
+      default = 15;
+      description = "Polling interval in seconds.";
+    };
+
+    stateDir = mkOption {
+      type = types.str;
+      default = "/var/lib/deploy-intent";
+      description = "Persistent state directory for downloads and reboot-resume state.";
+    };
+
+    labels = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "Key=value labels advertised by the agent.";
+    };
+
+    extraArgs = mkOption {
+      type = types.str;
+      default = "";
+      description = "Additional raw arguments appended to the agent command.";
+    };
+  };
+
+  config = mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = cfg.package != null;
+        message = "services.deploy-intent-agent.package must be set.";
+      }
+    ];
+
+    systemd.tmpfiles.rules = [
+      "d ${cfg.stateDir} 0750 root root -"
+    ];
+
+    systemd.services.deploy-intent-agent = {
+      description = "deploy-intent agent";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      restartIfChanged = true;
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = startScript;
+        Restart = "always";
+        RestartSec = 5;
+        WorkingDirectory = cfg.stateDir;
+        User = "root";
+      };
+    };
+  };
+}

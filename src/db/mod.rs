@@ -1,8 +1,8 @@
 use crate::types::*;
 use anyhow::{anyhow, Context, Result};
 use chrono::{DateTime, Utc};
-use rusqlite::{params, Connection, OptionalExtension, Row};
-use std::{collections::BTreeMap, path::Path};
+use rusqlite::{params, Connection, Row};
+use std::path::Path;
 use uuid::Uuid;
 
 pub fn open(path: &Path) -> Result<Connection> {

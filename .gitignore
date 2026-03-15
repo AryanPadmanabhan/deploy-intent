@@ -1,0 +1,8 @@
+/target/
+/agent-state-node-1/
+/deploy_intent.db
+/deploy_intent.db-shm
+/deploy_intent.db-wal
+/*.db
+/*.db-shm
+/*.db-wal

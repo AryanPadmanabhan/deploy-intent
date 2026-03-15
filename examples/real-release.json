@@ -1,0 +1,44 @@
+{
+    "version": "1.0.1",
+    "target_type": "edge-linux-aarch64",
+    "manifest": {
+      "target_type": "edge-linux-aarch64",
+      "artifact": {
+        "url": "http://10.2.24.81:9000/release-1.txt",
+        "sha256": "756d1ce5a7ff9568a4ed9c8990871ededf226b1ab323dcf1c2a7a550d64a4f31",
+        "headers": {}
+      },
+      "install": {
+        "install_type": "scripted",
+        "executor": "scripted",
+        "slot_pair": ["A", "B"],
+        "install_command": "mkdir -p /var/tmp/deploy-intent-test && curl -fsSL http://10.2.24.81:9000/release-1.txt -o /var/tmp/deploy-intent-test/release-1.txt",
+        "install_args": []
+      },
+      "activation": {
+        "activation_type": "scripted",
+        "bootloader": "none",
+        "activate_command": "echo activated > /var/tmp/deploy-intent-test/activated.txt"
+      },
+      "rollback": {
+        "automatic": true,
+        "on_boot_failure": true,
+        "on_health_failure": true,
+        "rollback_command": null,
+        "candidate_timeout_seconds": 900
+      },
+      "health_checks": [
+        {
+          "name": "file-exists",
+          "kind": "command_exit_zero",
+          "command": "test -f /var/tmp/deploy-intent-test/release-1.txt",
+          "url": null,
+          "contains": null
+        }
+      ],
+      "labels": {
+        "track": "prod"
+      }
+    }
+  }
+  

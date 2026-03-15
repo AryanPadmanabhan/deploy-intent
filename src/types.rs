@@ -35,6 +35,8 @@ pub struct InstallConfig {
     pub install_command: Option<String>,
     #[serde(default)]
     pub install_args: Vec<String>,
+    #[serde(default)]
+    pub nix_generation: Option<NixGenerationConfig>,
 }
 
 fn default_install_type() -> String {
@@ -42,6 +44,28 @@ fn default_install_type() -> String {
 }
 fn default_executor() -> String {
     "noop".into()
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NixGenerationConfig {
+    #[serde(default)]
+    pub flake: Option<String>,
+    #[serde(default)]
+    pub flake_attr: Option<String>,
+    #[serde(default)]
+    pub source_path: Option<String>,
+    #[serde(default)]
+    pub build_command: Option<String>,
+    #[serde(default)]
+    pub boot_command: Option<String>,
+    #[serde(default)]
+    pub reboot_command: Option<String>,
+    #[serde(default)]
+    pub expected_system_path: Option<String>,
+    #[serde(default)]
+    pub expected_hostname: Option<String>,
+    #[serde(default)]
+    pub validation_timeout_seconds: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
