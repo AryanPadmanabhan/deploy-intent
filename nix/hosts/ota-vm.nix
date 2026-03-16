@@ -25,6 +25,11 @@
   environment.systemPackages = [ pkgs.tree ];
   environment.etc."deploy-intent/baseline-release".text = "baseline";
 
+  users.users.aryanp = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "networkmanager" ];
+  };
+
   services.openssh.enable = true;
   services.openssh.settings.PasswordAuthentication = true;
   services.xserver.enable = true;
