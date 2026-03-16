@@ -96,6 +96,9 @@ in
         RestartSec = 5;
         WorkingDirectory = cfg.stateDir;
         User = "root";
+        Environment = [
+          "PATH=/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin"
+        ];
       };
     };
   };
