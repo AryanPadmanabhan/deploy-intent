@@ -1,19 +1,20 @@
 {
-    "release_id": "7e61c493-3232-4e9d-af26-5e3f5eb44485",
-    "rollout_name": "real-vm-test",
-    "selector": {
-      "target_type": "edge-linux-aarch64",
-      "labels": {
-        "region": "lab"
-      },
-      "mission_states": ["idle"]
+  "release_id": "01261e7f-e16b-420d-b3ec-442182426136",
+  "rollout_name": "ota-vm-gui-restore",
+  "selector": {
+    "target_type": "edge-linux-aarch64",
+    "labels": {
+      "region": "lab"
     },
-    "strategy": {
-      "canary": 1,
-      "batch_size": 10,
-      "max_parallel": 1,
-      "max_failure_rate": 0.2,
-      "require_idle": true
-    }
+    "mission_states": [
+      "idle"
+    ]
+  },
+  "strategy": {
+    "canary": 0,
+    "batch_size": 1,
+    "max_parallel": 1,
+    "max_failure_rate": 1.0,
+    "require_idle": true
   }
-  
+}
