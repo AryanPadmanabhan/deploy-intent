@@ -1,7 +1,7 @@
 { self, pkgs, ... }:
 {
   imports = [
-    ./hardware-configuration.nix
+    /etc/nixos/hardware-configuration.nix
   ];
 
   system.stateVersion = "25.11";
