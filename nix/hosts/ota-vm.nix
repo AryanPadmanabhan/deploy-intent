@@ -22,7 +22,12 @@
 
   time.timeZone = "America/Chicago";
 
-  environment.systemPackages = [ pkgs.tree ];
+  environment.systemPackages = with pkgs; [
+    curl
+    git
+    tree
+    vim
+  ];
   environment.etc."deploy-intent/baseline-release".text = "baseline";
 
   users.users.aryanp = {
