@@ -152,6 +152,16 @@ impl Executor for NixGenerationExecutor {
 
             if let Some(cmd) = &cfg.boot_command {
                 run_shell(cmd, &env)?;
+            } else if let Some(config_name) = nixos_config_name(cfg) {
+                let flake = flake_ref(ctx, cfg);
+                let flake_target = format!("{flake}#{config_name}");
+                let status = Command::new("nixos-rebuild")
+                    .args(["boot", "--flake", &flake_target])
+                    .status()
+                    .with_context(|| format!("running nixos-rebuild boot for {flake_target}"))?;
+                if !status.success() {
+                    return Err(anyhow!("nixos-rebuild boot failed for {flake_target}"));
+                }
             } else {
                 let switch_to_configuration = Path::new(&metadata.system_path).join("bin/switch-to-configuration");
                 let status = Command::new(&switch_to_configuration)
@@ -205,6 +215,17 @@ fn flake_ref(ctx: &ExecutionContext, cfg: &NixGenerationConfig) -> String {
         .clone()
         .or_else(|| cfg.source_path.clone())
         .unwrap_or_else(|| ctx.artifact_path.display().to_string())
+}
+
+fn nixos_config_name(cfg: &NixGenerationConfig) -> Option<String> {
+    let attr = cfg.flake_attr.as_deref()?;
+    let trimmed = attr.strip_prefix("nixosConfigurations.")?;
+    let (name, suffix) = trimmed.split_once('.')?;
+    if suffix == "config.system.build.toplevel" {
+        Some(name.to_string())
+    } else {
+        None
+    }
 }
 
 fn nix_build_metadata_path(ctx: &ExecutionContext) -> PathBuf {
