@@ -7,12 +7,12 @@
       "source": {
         "kind": "copy_from_store",
         "copy_from": "ssh://aryanpaddy@10.2.24.81",
-        "store_path": "/nix/store/gihzh59qkbr8f68ypgmibam5z3sn3kq3-nixos-system-ota-vm-noda-3-25.11.20260314.e9f278f"
+        "store_path": "/nix/store/wwpnjvw2gmp7x9hnh47fm10h0cd60l2f-nixos-system-ota-vm-noda-wrong-trying-again-25.11.20260314.e9f278f"
       }
     },
     "validation": {
       "expected_hostname": "ota-vm",
-      "timeout_seconds": 900,
+      "timeout_seconds": 10,
       "health_checks": [
         {
           "name": "noda-active",
