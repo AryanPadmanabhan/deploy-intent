@@ -28,15 +28,5 @@
       }) // {
         nixosModules.noda = import ./nix/modules/noda-agent.nix;
         nixosModules.noda-server = import ./nix/modules/noda-server.nix;
-        nixosModules.ota-vm = import ./nix/hosts/ota-vm.nix;
-
-        nixosConfigurations.ota-vm = nixpkgs.lib.nixosSystem {
-          system = "aarch64-linux";
-          specialArgs = { inherit self; };
-          modules = [
-            self.nixosModules.noda
-            self.nixosModules.ota-vm
-          ];
-        };
       };
 }
