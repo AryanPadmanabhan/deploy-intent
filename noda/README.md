@@ -327,9 +327,7 @@ Example: copy prebuilt system from a store source
 - supported artifact formats are raw `ext4` and `ext4.zst`
 - the machine already has two root partitions and a working GRUB config
 - the release declares both slot devices and the GRUB menu entry for each slot
-- the release declares the target filesystem label for each slot
 - the agent writes the image into the inactive root partition
-- the agent runs `e2fsck`, restores the expected filesystem label, and randomizes the inactive-slot UUID
 - the agent sets `saved_entry` in `grubenv`
 - the machine reboots
 - post-boot validation runs
@@ -356,14 +354,12 @@ Example:
         {
           "name": "A",
           "device": "/dev/disk/by-partlabel/rootfs-a",
-          "grub_menu_entry": "noda-slot-a",
-          "filesystem_label": "rootfs-a"
+          "grub_menu_entry": "noda-slot-a"
         },
         {
           "name": "B",
           "device": "/dev/disk/by-partlabel/rootfs-b",
-          "grub_menu_entry": "noda-slot-b",
-          "filesystem_label": "rootfs-b"
+          "grub_menu_entry": "noda-slot-b"
         }
       ],
       "boot_control": {

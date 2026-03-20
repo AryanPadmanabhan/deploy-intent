@@ -53,7 +53,6 @@ pub struct GrubAbSlot {
     pub name: String,
     pub device: String,
     pub grub_menu_entry: String,
-    pub filesystem_label: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -267,22 +266,12 @@ impl ReleaseManifest {
                                 "grub_ab.slots grub_menu_entry values must not be empty"
                             ));
                         }
-                        if slot.filesystem_label.trim().is_empty() {
-                            return Err(anyhow!(
-                                "grub_ab.slots filesystem_label values must not be empty"
-                            ));
-                        }
                     }
                     if slots[0].name == slots[1].name {
                         return Err(anyhow!("grub_ab.slots names must be distinct"));
                     }
                     if slots[0].device == slots[1].device {
                         return Err(anyhow!("grub_ab.slots devices must be distinct"));
-                    }
-                    if slots[0].filesystem_label == slots[1].filesystem_label {
-                        return Err(anyhow!(
-                            "grub_ab.slots filesystem_label values must be distinct"
-                        ));
                     }
                     if let Some([left, right]) = &spec.slot_pair {
                         if slots[0].name != *left || slots[1].name != *right {
@@ -692,14 +681,12 @@ mod tests {
                     {
                         "name": "B",
                         "device": "/dev/disk/by-partlabel/root-b",
-                        "grub_menu_entry": "noda-slot-b",
-                        "filesystem_label": "rootfs-b"
+                        "grub_menu_entry": "noda-slot-b"
                     },
                     {
                         "name": "A",
                         "device": "/dev/disk/by-partlabel/root-a",
-                        "grub_menu_entry": "noda-slot-a",
-                        "filesystem_label": "rootfs-a"
+                        "grub_menu_entry": "noda-slot-a"
                     }
                 ]
             }
