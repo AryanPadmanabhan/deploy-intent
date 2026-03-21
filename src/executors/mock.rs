@@ -2,9 +2,9 @@ use super::{ActivationOutcome, ExecutionContext, Executor};
 use anyhow::Result;
 use std::{future::Future, pin::Pin};
 
-pub(super) struct NoopExecutor;
+pub(super) struct MockExecutor;
 
-impl Executor for NoopExecutor {
+impl Executor for MockExecutor {
     fn install<'a>(
         &'a self,
         _ctx: &'a ExecutionContext,

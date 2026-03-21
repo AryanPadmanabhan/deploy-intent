@@ -230,7 +230,7 @@ pub(super) async fn execute_command(
     let previous_active_slot = Some(current_slot.clone()).or_else(|| state.active_slot.clone());
     let previous_root_device = match &cmd.manifest.executor {
         ExecutorSpec::GrubAb(spec) if spec.slots.is_some() => Some(current_root_device()?),
-        ExecutorSpec::GrubAb(_) | ExecutorSpec::Noop | ExecutorSpec::Scripted(_) | ExecutorSpec::NixGeneration(_) => None,
+        ExecutorSpec::GrubAb(_) | ExecutorSpec::Mock | ExecutorSpec::NixGeneration(_) => None,
     };
     let previous_version = state.current_version.clone();
     let rollback_action = executors::rollback_action(
@@ -302,9 +302,8 @@ fn should_attempt_rollback(pending: &PendingBootState) -> bool {
 
 fn artifact_source(executor: &ExecutorSpec) -> Option<&ArtifactSource> {
     match executor {
-        ExecutorSpec::Scripted(spec) => Some(&spec.artifact),
         ExecutorSpec::GrubAb(spec) => Some(&spec.artifact),
-        ExecutorSpec::Noop | ExecutorSpec::NixGeneration(_) => None,
+        ExecutorSpec::Mock | ExecutorSpec::NixGeneration(_) => None,
     }
 }
 
@@ -314,7 +313,7 @@ fn slot_pair(executor: &ExecutorSpec) -> Option<[String; 2]> {
             .slot_pair
             .clone()
             .or_else(|| spec.slots.as_ref().map(|slots| [slots[0].name.clone(), slots[1].name.clone()])),
-        ExecutorSpec::Noop | ExecutorSpec::Scripted(_) | ExecutorSpec::NixGeneration(_) => None,
+        ExecutorSpec::Mock | ExecutorSpec::NixGeneration(_) => None,
     }
 }
 
@@ -336,7 +335,7 @@ fn requires_reboot(executor: &ExecutorSpec) -> bool {
     match executor {
         ExecutorSpec::NixGeneration(_) => true,
         ExecutorSpec::GrubAb(spec) => spec.slots.is_some(),
-        ExecutorSpec::Noop | ExecutorSpec::Scripted(_) => false,
+        ExecutorSpec::Mock => false,
     }
 }
 

@@ -19,18 +19,9 @@ pub struct ReleaseManifest {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum ExecutorSpec {
-    Noop,
-    Scripted(ScriptedExecutorSpec),
+    Mock,
     GrubAb(GrubAbExecutorSpec),
     NixGeneration(NixGenerationExecutorSpec),
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ScriptedExecutorSpec {
-    pub artifact: ArtifactSource,
-    pub install_command: String,
-    #[serde(default)]
-    pub activate_command: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -81,10 +72,6 @@ pub struct NixGenerationExecutorSpec {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum NixGenerationSource {
-    BuildFlake {
-        flake: String,
-        flake_attr: String,
-    },
     CopyFromStore {
         copy_from: String,
         store_path: String,
@@ -230,20 +217,7 @@ impl ReleaseManifest {
         self.validation.validate()?;
 
         match &self.executor {
-            ExecutorSpec::Noop => {}
-            ExecutorSpec::Scripted(spec) => {
-                validate_artifact_source(&spec.artifact)?;
-                if spec.install_command.trim().is_empty() {
-                    return Err(anyhow!("scripted.install_command must not be empty"));
-                }
-                if let Some(command) = &spec.activate_command {
-                    if command.trim().is_empty() {
-                        return Err(anyhow!(
-                            "scripted.activate_command must not be empty when provided"
-                        ));
-                    }
-                }
-            }
+            ExecutorSpec::Mock => {}
             ExecutorSpec::GrubAb(spec) => {
                 validate_artifact_source(&spec.artifact)?;
                 if let Some([left, right]) = &spec.slot_pair {
@@ -323,18 +297,6 @@ impl ReleaseManifest {
                 }
             }
             ExecutorSpec::NixGeneration(spec) => match &spec.source {
-                NixGenerationSource::BuildFlake { flake, flake_attr } => {
-                    if flake.trim().is_empty() {
-                        return Err(anyhow!(
-                            "nix_generation.build_flake.flake must not be empty"
-                        ));
-                    }
-                    if flake_attr.trim().is_empty() {
-                        return Err(anyhow!(
-                            "nix_generation.build_flake.flake_attr must not be empty"
-                        ));
-                    }
-                }
                 NixGenerationSource::CopyFromStore {
                     copy_from,
                     store_path,
