@@ -50,8 +50,8 @@ Flow:
 - artifact-driven Nix deployments using `nix copy --from`
 - GRUB-based A/B rootfs deployments using raw `ext4` or `ext4.zst` artifacts
 - post-boot validation
-- automatic rollback after validation failure
-- automatic healthchecks 
+- automatic rollback for `nix_generation` and `grub_ab` after validation failure
+- automatic healthchecks
 
 ## TODOs
 
@@ -403,7 +403,7 @@ Use:
 - `examples/nix-copy-deployment.json`
 
 
-### Generic A/B-style artifact rollout
+### GRUB A/B rootfs rollout
 
 Use:
 
